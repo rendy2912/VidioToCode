@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video to Code Converter</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Video to Code Converter</h1>
+  <p>Ubah video menjadi frame untuk OLED / TFT dan hasilkan kode Arduino / ESP32 — 100% di browser.</p>
+</header>
+<main>
+  <section>
+    <h2>1. Upload Video</h2>
+    <input type="file" id="file" accept="video/*" hidden>
+    <button class="primary" id="pickBtn">Pilih Video</button>
+    <div id="fileInfo" class="info">Belum ada video. Video diproses lokal, tidak diupload ke server.</div>
+    <div id="formats" class="info"></div>
+  </section>
+
+  <section>
+    <h2>2. Display Settings</h2>
+    <div class="grid">
+      <div><label for="display">Display</label><select id="display" class="s"></select></div>
+      <div><label for="board">Board target</label>
+        <select id="board" class="s"><option value="esp32">ESP32</option><option value="arduino">Arduino (Uno/Nano/Mega)</option></select></div>
+    </div>
+    <div id="customOpts" class="grid" hidden>
+      <div><label for="cw">Width</label><input type="number" id="cw" class="s" value="128" min="8" max="512"></div>
+      <div><label for="ch">Height</label><input type="number" id="ch" class="s" value="64" min="8" max="512"></div>
+      <div><label for="cmode">Color mode</label>
+        <select id="cmode" class="s"><option value="oled">Monochrome 1-bit</option><option value="tft">RGB565</option></select></div>
+    </div>
+    <div id="resInfo" class="info"></div>
+  </section>
+
+  <section>
+    <h2>3. FPS Settings</h2>
+    <label for="fps">Frame per detik</label>
+    <select id="fps" class="s">
+      <option>1</option><option>5</option><option selected>10</option><option>15</option>
+      <option>20</option><option>24</option><option>30</option>
+    </select>
+    <div id="frameEst" class="info"></div>
+    <ul id="warnings"></ul>
+  </section>
+
+  <section>
+    <h2>4. Image Processing</h2>
+    <div class="grid">
+      <div><label for="scale">Video scaling</label>
+        <select id="scale" class="s"><option value="fit">Fit (aspect ratio dijaga, ada bar hitam)</option><option value="fill">Fill (aspect ratio dijaga, dipotong)</option><option value="stretch">Stretch</option></select></div>
+      <div><label>Brightness: <b id="bv">0</b></label><input type="range" id="brightness" class="s" min="-100" max="100" value="0"></div>
+      <div><label>Contrast: <b id="cv">0</b></label><input type="range" id="contrast" class="s" min="-100" max="100" value="0"></div>
+    </div>
+    <div id="oledOpts" class="grid">
+      <div><label for="omode">Mode OLED (hasil 1-bit)</label>
+        <select id="omode" class="s">
+          <option value="mono">Monochrome (batas 128)</option>
+          <option value="threshold">Threshold (atur slider)</option>
+          <option value="gray">Grayscale (auto-level)</option>
+          <option value="dither">Dithering (Floyd–Steinberg)</option>
+        </select></div>
+      <div><label>Threshold: <b id="tv">128</b></label><input type="range" id="threshold" class="s" min="1" max="254" value="128"></div>
+      <div><label><input type="checkbox" id="invert" class="s"> Invert (balik hitam/putih)</label></div>
+    </div>
+    <div id="tftNote" class="info" hidden>Mode TFT: warna RGB dipertahankan lalu diubah ke RGB565 (16-bit).</div>
+  </section>
+
+  <section>
+    <h2>5. Preview</h2>
+    <div class="screen"><canvas id="canvas" width="128" height="64"></canvas></div>
+    <div id="pvInfo" class="info">Frame 0 / 0</div>
+    <div class="row">
+      <button id="prevBtn" disabled>◀ Previous Frame</button>
+      <button id="playBtn" disabled>▶ Play Preview</button>
+      <button id="stopBtn" disabled>■ Stop</button>
+      <button id="nextBtn" disabled>Next Frame ▶</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. Conversion Progress</h2>
+    <div class="row">
+      <button class="primary big" id="convertBtn" disabled>CONVERT VIDEO</button>
+      <button id="cancelBtn" disabled>Batal</button>
+    </div>
+    <div class="bar"><div id="bar"></div></div>
+    <div id="progText" class="info">Menunggu video.</div>
+  </section>
+
+  <section>
+    <h2>7. Generated Code</h2>
+    <label for="tab">File</label>
+    <select id="tab"><option value="header">VideoFrame.h</option><option value="main">Main.ino</option></select>
+    <textarea id="code" readonly spellcheck="false" placeholder="Kode muncul di sini setelah CONVERT VIDEO selesai."></textarea>
+    <div class="row">
+      <button id="copyBtn" disabled>Copy Code</button>
+      <button id="dlHeader" disabled>Download VideoFrame.h</button>
+      <button id="dlMain" disabled>Download Main.ino</button>
+      <button id="dlZip" class="primary" disabled>Download ZIP</button>
+    </div>
+  </section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
